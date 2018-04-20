@@ -87,11 +87,6 @@ namespace PrimeCalculator
 
                 if (i == j)
                 {
-                    // Add Console Output if you like, but it will slow down the process
-#pragma warning disable S125 // Sections of code should not be "commented out"
-                    // Console.WriteLine(i.ToString());
-#pragma warning restore S125 // Sections of code should not be "commented out"
-
                     lock (queue)
                     {
                         queue.Enqueue(i.ToString() + ",");
