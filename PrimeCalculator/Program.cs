@@ -1,15 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace PrimeCalculator
+﻿namespace PrimeCalculator
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     class Program : IDisposable
     {
+        /// <summary>
+        /// The file path
+        /// </summary>
         const string filePath = @".\output.txt";
+
+        /// <summary>
+        /// The file stream
+        /// </summary>
         static FileStream fileStream;
 
         /// <summary>
@@ -22,6 +29,10 @@ namespace PrimeCalculator
         /// </summary>
         private static AutoResetEvent messageTrigger = new AutoResetEvent(false);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Main(string[])"/> class./>
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         static void Main(string[] args)
         {
             // Clear up previous run
@@ -49,6 +60,9 @@ namespace PrimeCalculator
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Calculates the prime numbers
+        /// </summary>
         private static void Calculate()
         {
             double j, i;
@@ -75,11 +89,13 @@ namespace PrimeCalculator
                     {
                         queue.Enqueue(i.ToString() + ",");
                     }
-
                 }
             }
         }
 
+        /// <summary>
+        /// Processes the queue.
+        /// </summary>
         private static void ProcessQueue()
         {
             while (true)
@@ -99,6 +115,11 @@ namespace PrimeCalculator
             }
         }
 
+        /// <summary>
+        /// Writes the text asynchronous.
+        /// </summary>
+        /// <param name="text">The text to write into the file.</param>
+        /// <returns></returns>
         private static async Task WriteTextAsync(string text)
         {
             byte[] encodedText = Encoding.Unicode.GetBytes(text);
@@ -106,6 +127,11 @@ namespace PrimeCalculator
             await fileStream.WriteAsync(encodedText, 0, encodedText.Length);
         }
 
+        /// <summary>
+        /// async write handler.
+        /// </summary>
+        /// <param name="text">The text to write into the file.</param>
+        /// <returns></returns>
         private static Task ProcessWrite(string text)
         {
             return WriteTextAsync(text);
