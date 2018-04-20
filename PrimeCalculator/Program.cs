@@ -34,7 +34,7 @@ namespace PrimeCalculator
         /// <summary>
         /// Message Trigger
         /// </summary>
-        private static AutoResetEvent messageTrigger = new AutoResetEvent(false);
+        private static AutoResetEvent trigger = new AutoResetEvent(false);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Main(string[])"/> class./>
@@ -102,7 +102,7 @@ namespace PrimeCalculator
         {
             while (true)
             {
-                messageTrigger.WaitOne(5000);
+                trigger.WaitOne(5000);
                 string[] stringArray = null;
 
                 lock (queue)
