@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PrimeCalculator
@@ -10,11 +12,18 @@ namespace PrimeCalculator
         const string filePath = @".\output.txt";
         static FileStream fileStream;
 
+        /// <summary>
+        /// Message Queue of the type Data.Message.
+        /// </summary>
+        private static Queue<string> queue = new Queue<string>();
+
+        /// <summary>
+        /// Message Trigger
+        /// </summary>
+        private static AutoResetEvent messageTrigger = new AutoResetEvent(false);
+
         static void Main(string[] args)
         {
-            // Register Close Event
-
-
             // Clear up previous run
             if (File.Exists(filePath))
             {
@@ -22,7 +31,26 @@ namespace PrimeCalculator
             }
 
             fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+            
+            // Thread creation
+            Thread queueThread = new Thread(new ThreadStart(ProcessQueue))
+            {
+                IsBackground = true
+            };
+            queueThread.Start();
 
+
+            Thread calcThread = new Thread(new ThreadStart(Calculate))
+            {
+                IsBackground = true
+            };
+            calcThread.Start();
+
+            Console.ReadLine();
+        }
+
+        private static void Calculate()
+        {
             double j, i;
             double positiveInfinity = Double.PositiveInfinity;
 
@@ -43,13 +71,35 @@ namespace PrimeCalculator
                     // Console.WriteLine(i.ToString());
 #pragma warning restore S125 // Sections of code should not be "commented out"
 
-                    ProcessWrite(i.ToString() + Environment.NewLine).Wait();
+                    lock (queue)
+                    {
+                        queue.Enqueue(i.ToString() + ",");
+                    }
 
                 }
             }
         }
 
-        static async Task WriteTextAsync(string text)
+        private static void ProcessQueue()
+        {
+            while (true)
+            {
+                messageTrigger.WaitOne(5000);
+                string[] stringArray = null;
+
+                lock (queue)
+                {
+                    stringArray = queue.ToArray();
+                }
+
+                foreach (string item in stringArray)
+                {
+                    ProcessWrite(item);
+                }
+            }
+        }
+
+        private static async Task WriteTextAsync(string text)
         {
             byte[] encodedText = Encoding.Unicode.GetBytes(text);
 
