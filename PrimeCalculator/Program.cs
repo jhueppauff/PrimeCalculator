@@ -1,4 +1,11 @@
-﻿namespace PrimeCalculator
+﻿//-----------------------------------------------------------------------
+// <copyright file="App.xaml.cs" company="https://github.com/jhueppauff/PrimeCalculator">
+// Copyright 2018 Jhueppauff
+// MIT License 
+// For licence details visit https://github.com/jhueppauff/PrimeCalculator/blob/master/LICENSE
+//-----------------------------------------------------------------------
+
+namespace PrimeCalculator
 {
     using System;
     using System.Collections.Generic;
