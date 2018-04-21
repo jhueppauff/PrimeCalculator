@@ -113,6 +113,7 @@ namespace PrimeCalculator
                 foreach (string item in stringArray)
                 {
                     ProcessWrite(item);
+                    queue.Dequeue();
                 }
             }
         }
