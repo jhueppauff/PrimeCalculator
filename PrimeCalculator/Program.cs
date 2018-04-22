@@ -164,7 +164,6 @@ namespace PrimeCalculator
                     { 
                         counterCalculated++;
                         queue.Enqueue(i.ToString(CultureInfo.CurrentCulture) + ",");
-
                     }
                 }
             }
