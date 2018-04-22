@@ -10,6 +10,7 @@ namespace PrimeCalculator
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
     using System.Threading;
@@ -21,6 +22,11 @@ namespace PrimeCalculator
     /// <seealso cref="System.IDisposable" />
     public class Program : IDisposable
     {
+        /// <summary>
+        /// Log4Net Logger
+        /// </summary>
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The file path
         /// </summary>
@@ -134,7 +140,7 @@ namespace PrimeCalculator
                 {
                     lock (queue)
                     {
-                        queue.Enqueue(i.ToString() + ",");
+                        queue.Enqueue(i.ToString(CultureInfo.CurrentCulture) + ",");
                     }
                 }
             }
@@ -170,9 +176,16 @@ namespace PrimeCalculator
         /// <returns>Returns <see cref="Task"/></returns>
         private static async Task WriteTextAsync(string text)
         {
-            byte[] encodedText = Encoding.Unicode.GetBytes(text);
+            try
+            {
+                byte[] encodedText = Encoding.Unicode.GetBytes(text);
 
-            await fileStream.WriteAsync(encodedText, 0, encodedText.Length);
+                await fileStream.WriteAsync(encodedText, 0, encodedText.Length).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error while writiing to File!", ex);
+            }
         }
 
         /// <summary>
