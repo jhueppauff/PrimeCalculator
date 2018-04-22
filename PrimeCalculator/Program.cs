@@ -36,6 +36,9 @@ namespace PrimeCalculator
         /// </summary>
         private static AutoResetEvent trigger = new AutoResetEvent(false);
 
+        private static Int64 counterCalculated = 0;
+        private static Int64 counterWritten = 0;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Main(string[])"/> class./>
         /// </summary>
@@ -64,7 +67,26 @@ namespace PrimeCalculator
             };
             calcThread.Start();
 
+
+            Thread consoleUpdate = new Thread(new ThreadStart(ConsoleUpdate))
+            {
+                IsBackground = true
+            };
+            consoleUpdate.Start();
+
             Console.ReadLine();
+        }
+
+        private static void ConsoleUpdate()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Primes found : {counterCalculated}");
+                Console.WriteLine($"Primes in queue : {queue.Count}");
+                Console.WriteLine($"Primes written: {counterWritten}");
+                Thread.Sleep(100);
+            }
         }
 
         /// <summary>
@@ -89,6 +111,7 @@ namespace PrimeCalculator
                 {
                     lock (queue)
                     {
+                        counterCalculated++;
                         queue.Enqueue(i.ToString() + ",");
                     }
                 }
@@ -112,6 +135,7 @@ namespace PrimeCalculator
 
                 foreach (string item in stringArray)
                 {
+                    counterWritten++;
                     ProcessWrite(item);
                     queue.Dequeue();
                 }
