@@ -161,13 +161,10 @@ namespace PrimeCalculator
                 if (i == j)
                 {
                     lock (queue)
-                    {
-<<<<<<< HEAD
+                    { 
                         counterCalculated++;
-                        queue.Enqueue(i.ToString() + ",");
-=======
                         queue.Enqueue(i.ToString(CultureInfo.CurrentCulture) + ",");
->>>>>>> 733b7bff3bb1f3a70e7762491a34b9bc84c3b4e8
+
                     }
                 }
             }
