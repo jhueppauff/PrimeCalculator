@@ -3,6 +3,7 @@
 // Copyright 2018 Jhueppauff
 // MIT License 
 // For licence details visit https://github.com/jhueppauff/PrimeCalculator/blob/master/LICENSE
+// </copyright>
 //-----------------------------------------------------------------------
 
 namespace PrimeCalculator
@@ -14,17 +15,21 @@ namespace PrimeCalculator
     using System.Threading;
     using System.Threading.Tasks;
 
-    class Program : IDisposable
+    /// <summary>
+    ///  Main Program Class
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
+    public class Program : IDisposable
     {
         /// <summary>
         /// The file path
         /// </summary>
-        const string filePath = @".\output.txt";
+        private const string FilePath = @".\output.txt";
 
         /// <summary>
         /// The file stream
         /// </summary>
-        static FileStream fileStream;
+        private static FileStream fileStream;
 
         /// <summary>
         /// Message Queue of the type Data.Message.
@@ -37,18 +42,59 @@ namespace PrimeCalculator
         private static AutoResetEvent trigger = new AutoResetEvent(false);
 
         /// <summary>
+        /// The disposed value to detect redundant calls
+        /// </summary>
+        private bool disposedValue = false;
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="Program"/> class.
+        /// </summary>
+        ~Program()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            this.Dispose(false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposedValue)
+            {
+                if (disposing)
+                {
+                    Program.fileStream.Dispose();
+                }
+
+                this.disposedValue = true;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Main(string[])"/> class./>
         /// </summary>
         /// <param name="args">The arguments.</param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // Clear up previous run
-            if (File.Exists(filePath))
+            if (File.Exists(FilePath))
             {
-                File.Delete(filePath);
+                File.Delete(FilePath);
             }
 
-            fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+            fileStream = new FileStream(FilePath, FileMode.Append, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
             
             // Thread creation
             Thread queueThread = new Thread(new ThreadStart(ProcessQueue))
@@ -56,7 +102,6 @@ namespace PrimeCalculator
                 IsBackground = true
             };
             queueThread.Start();
-
 
             Thread calcThread = new Thread(new ThreadStart(Calculate))
             {
@@ -73,7 +118,7 @@ namespace PrimeCalculator
         private static void Calculate()
         {
             double j, i;
-            double positiveInfinity = Double.PositiveInfinity;
+            double positiveInfinity = double.PositiveInfinity;
 
             for (i = 2; i < positiveInfinity; i++)
             {
@@ -122,7 +167,7 @@ namespace PrimeCalculator
         /// Writes the text asynchronous.
         /// </summary>
         /// <param name="text">The text to write into the file.</param>
-        /// <returns></returns>
+        /// <returns>Returns <see cref="Task"/></returns>
         private static async Task WriteTextAsync(string text)
         {
             byte[] encodedText = Encoding.Unicode.GetBytes(text);
@@ -134,41 +179,10 @@ namespace PrimeCalculator
         /// async write handler.
         /// </summary>
         /// <param name="text">The text to write into the file.</param>
-        /// <returns></returns>
+        /// <returns>Returns <see cref="Task"/></returns>
         private static Task ProcessWrite(string text)
         {
             return WriteTextAsync(text);
-        }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    fileStream.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        ~Program()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(false);
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
+        } 
     }
 }
