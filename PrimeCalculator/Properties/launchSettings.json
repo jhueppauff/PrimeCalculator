@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PrimeCalculator": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
